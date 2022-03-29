@@ -46,6 +46,7 @@ public class TelkomLoginController: UIViewController {
         viewTop.addSubview(viewLine)
         self.view.addSubview(viewTop)
         self.view.addSubview(webview)
+        self.view.backgroundColor = .white
     }
     
     public func getToken() -> String {
