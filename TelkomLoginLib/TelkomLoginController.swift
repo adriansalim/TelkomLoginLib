@@ -11,6 +11,7 @@ import WebKit
 public class TelkomLoginController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
+        self.removeCache()
         
         let window = UIApplication.shared.keyWindow
         let topPadding = (window?.safeAreaInsets.top ?? 0) + 20
@@ -54,16 +55,47 @@ public class TelkomLoginController: UIViewController {
     @objc func backAction(sender: UIButton) {
         self.dismiss(animated: true)
     }
+    
+    func removeCache() {
+        // Cache
+        let dataStore = WKWebsiteDataStore.default()
+        dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            dataStore.removeData(
+                ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+                for: records.filter { $0.displayName.contains("facebook") },
+                completionHandler: {}
+            )
+        }
+        
+        // Cookies
+        if #available(iOS 9.0, *) {
+            let websiteDataTypes = NSSet(array: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache])
+            let date = NSDate(timeIntervalSince1970: 0)
+            
+            WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes as! Set<String>, modifiedSince: date as Date, completionHandler:{ })
+        } else {
+            var libraryPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.libraryDirectory, FileManager.SearchPathDomainMask.userDomainMask, false).first!
+            libraryPath += "/Cookies"
+            
+            do {
+                try FileManager.default.removeItem(atPath: libraryPath)
+            } catch {
+                print("error")
+                URLCache.shared.removeAllCachedResponses()
+            }
+        }
+              
+    }
 }
 
 extension TelkomLoginController: WKNavigationDelegate {
-    private func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
         print(UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? "")
     }
     
-    private func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
         print(UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? "")
