@@ -81,7 +81,6 @@ public class TelkomLoginController: UIViewController {
             do {
                 try FileManager.default.removeItem(atPath: libraryPath)
             } catch {
-                print("error")
                 URLCache.shared.removeAllCachedResponses()
             }
         }
@@ -93,12 +92,10 @@ extension TelkomLoginController: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
-        print(UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? "")
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
-        print(UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? "")
     }
 }
