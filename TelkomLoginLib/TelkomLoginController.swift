@@ -8,8 +8,8 @@
 import UIKit
 import WebKit
 
-class TelkomLoginController: UIViewController {
-    override func viewDidLoad() {
+public class TelkomLoginController: UIViewController {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         let window = UIApplication.shared.keyWindow
@@ -57,13 +57,13 @@ class TelkomLoginController: UIViewController {
 }
 
 extension TelkomLoginController: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    private func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
         print(UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? "")
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    private func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
         print(UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? "")
