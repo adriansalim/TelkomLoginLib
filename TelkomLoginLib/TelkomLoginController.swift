@@ -8,7 +8,12 @@
 import UIKit
 import WebKit
 
+protocol TelkomLoginDelegate {
+    func getTokenURL(token: String?)
+}
+
 public class TelkomLoginController: UIViewController {
+    var delegate: TelkomLoginDelegate?
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.removeCache()
@@ -97,5 +102,6 @@ extension TelkomLoginController: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
         UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
+        self.delegate?.getTokenURL(token: urlNow)
     }
 }
