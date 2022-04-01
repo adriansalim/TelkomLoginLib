@@ -23,8 +23,16 @@ public class TelkomLoginController: UIViewController {
         let topPadding = (window?.safeAreaInsets.top ?? 0) + 20
         
         let webview = WKWebView(frame: CGRect(x: 0, y: topPadding + 42, width: self.view.frame.width, height: self.view.frame.height - 40))
-        let link = URL(string:"https://my.indihome.co.id/oauth")!
-        let request = URLRequest(url: link)
+        let link = URL(string:"https://my.indihome.co.id/oauth-dev/test/sdk")!
+        var request = URLRequest(url: link)
+        request.httpMethod = "POST"
+        let params = [
+            "client_id": "oT8cUbus-Vxfv-yC3c-oBvbvAsA",
+            "apps_name": "apps-indistorage-key",
+            "redirect_uri": "https://page.cloudstorage.co.id/auth"
+        ]
+        let postString = self.getPostString(params: params)
+        request.httpBody = postString.data(using: .utf8)
         webview.load(request)
         webview.navigationDelegate = self
         
@@ -65,7 +73,7 @@ public class TelkomLoginController: UIViewController {
         dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
             dataStore.removeData(
                 ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
-                for: records.filter { $0.displayName.contains("facebook") },
+                for: records.filter { $0.displayName.contains("indi") },
                 completionHandler: {}
             )
         }
@@ -86,7 +94,14 @@ public class TelkomLoginController: UIViewController {
                 URLCache.shared.removeAllCachedResponses()
             }
         }
-              
+    }
+    
+    func getPostString(params: [String: String]) -> String {
+        var data = [String]()
+        for(key, value) in params {
+            data.append(key + "=\(value)")
+        }
+        return data.map { String($0)}.joined(separator: "&")
     }
 }
 
