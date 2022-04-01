@@ -8,12 +8,13 @@
 import UIKit
 import WebKit
 
-protocol TelkomLoginDelegate {
-    func getTokenURL(token: String?)
+public protocol TelkomLoginDelegate {
+    func urlStartLoad(url: String?)
+    func urlEndLoad(url: String?)
 }
 
 public class TelkomLoginController: UIViewController {
-    var delegate: TelkomLoginDelegate?
+    public var delegate: TelkomLoginDelegate?
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.removeCache()
@@ -54,10 +55,6 @@ public class TelkomLoginController: UIViewController {
         self.view.backgroundColor = .white
     }
     
-    public func getToken() -> String {
-        return UserDefaults.standard.string(forKey: "currentTelkomUrl") ?? ""
-    }
-    
     @objc func backAction(sender: UIButton) {
         self.dismiss(animated: true)
     }
@@ -91,21 +88,16 @@ public class TelkomLoginController: UIViewController {
         }
               
     }
-    
-    public func setDelegate(delegate: UIViewController) {
-        self.delegate = delegate as? TelkomLoginDelegate
-    }
 }
 
 extension TelkomLoginController: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
-        UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
+        self.delegate?.urlStartLoad(url: urlNow)
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
-        UserDefaults.standard.set(urlNow, forKey: "currentTelkomUrl")
-        self.delegate?.getTokenURL(token: urlNow)
+        self.delegate?.urlEndLoad(url: urlNow)
     }
 }
