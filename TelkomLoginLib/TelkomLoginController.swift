@@ -91,6 +91,10 @@ public class TelkomLoginController: UIViewController {
         }
               
     }
+    
+    public func setDelegate(delegate: UIViewController) {
+        self.delegate = delegate as? TelkomLoginDelegate
+    }
 }
 
 extension TelkomLoginController: WKNavigationDelegate {
