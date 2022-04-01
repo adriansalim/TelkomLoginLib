@@ -15,6 +15,10 @@ public protocol TelkomLoginDelegate {
 
 public class TelkomLoginController: UIViewController {
     public var delegate: TelkomLoginDelegate?
+    public var url: String = ""
+    public var clientId: String = ""
+    public var appsName: String = ""
+    public var redirectUri: String = ""
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.removeCache()
@@ -23,13 +27,13 @@ public class TelkomLoginController: UIViewController {
         let topPadding = (window?.safeAreaInsets.top ?? 0) + 20
         
         let webview = WKWebView(frame: CGRect(x: 0, y: topPadding + 42, width: self.view.frame.width, height: self.view.frame.height - 40))
-        let link = URL(string:"https://my.indihome.co.id/oauth-dev/test/sdk")!
+        let link = URL(string:self.url)!
         var request = URLRequest(url: link)
         request.httpMethod = "POST"
         let params = [
-            "client_id": "oT8cUbus-Vxfv-yC3c-oBvbvAsA",
-            "apps_name": "apps-indistorage-key",
-            "redirect_uri": "https://page.cloudstorage.co.id/auth"
+            "client_id": self.clientId,
+            "apps_name": self.appsName,
+            "redirect_uri": self.redirectUri
         ]
         let postString = self.getPostString(params: params)
         request.httpBody = postString.data(using: .utf8)
@@ -108,7 +112,9 @@ public class TelkomLoginController: UIViewController {
 extension TelkomLoginController: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         let urlNow = webView.url?.absoluteString ?? ""
-        self.delegate?.urlStartLoad(url: urlNow)
+        if urlNow.contains(self.redirectUri) {
+            self.delegate?.urlStartLoad(url: urlNow)
+        }
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
